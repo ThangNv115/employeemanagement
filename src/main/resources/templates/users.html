@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+  <title>User Management</title>
+</head>
+<body>
+<div layout:fragment="content">
+  <div class="box">
+    <div class="box-header">
+      <h3 class="box-title">User List</h3>
+      <div class="box-tools">
+        <a th:href="@{/admin/users/create}" class="btn btn-primary">Add New User</a>
+      </div>
+    </div>
+    <div class="box-body">
+      <table class="table table-bordered">
+        <thead>
+        <tr>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Roles</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+          <td th:text="${user.username}">Username</td>
+          <td th:text="${user.email}">Email</td>
+          <td>
+                            <span th:each="role : ${user.roles}"
+                                  th:text="${role.name}"
+                                  class="label label-info">Role</span>
+          </td>
+          <td>
+            <span th:if="${user.isOnline}" class="label label-success">Online</span>
+            <span th:unless="${user.isOnline}" class="label label-default">Offline</span>
+          </td>
+          <td>
+            <a th:href="@{/admin/users/{id}/edit(id=${user.id})}"
+               class="btn btn-sm btn-warning">Edit</a>
+            <form th:action="@{/admin/users/{id}/delete(id=${user.id})}"
+                  method="post" style="display: inline;">
+              <button type="submit" class="btn btn-sm btn-danger"
+                      onclick="return confirm('Are you sure?')">Delete</button>
+            </form>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</body>
+</html>
