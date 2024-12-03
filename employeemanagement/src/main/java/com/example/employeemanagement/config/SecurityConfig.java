@@ -1,9 +1,12 @@
 package com.example.employeemanagement.config;
 
+import com.example.employeemanagement.security.CustomAuthenticationSuccessHandler;
+import com.example.employeemanagement.security.CustomLogoutSuccessHandler;
 import com.example.employeemanagement.security.CustomUserDetailsService;
 import com.example.employeemanagement.ultil.Constants;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +26,12 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
 
+    @Autowired
+    private CustomAuthenticationSuccessHandler authenticationSuccessHandler;
+
+    @Autowired
+    private CustomLogoutSuccessHandler logoutSuccessHandler;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -39,15 +48,17 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
+                        .successHandler(authenticationSuccessHandler)
                         .defaultSuccessUrl("/otp/verify", true)
                         .failureUrl("/login?error")
                         .permitAll())
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login?logout")
+                        .logoutSuccessUrl("/login")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")
-                        .permitAll());
+                        .permitAll()
+                        .logoutSuccessHandler(logoutSuccessHandler));
 
         return http.build();
     }

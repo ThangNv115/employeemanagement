@@ -6,6 +6,7 @@ import com.example.employeemanagement.repository.RoleRepository;
 import com.example.employeemanagement.repository.UserRepository;
 import com.example.employeemanagement.ultil.Constants;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private WebSocketService webSocketService;
 
     public User findById(Long id) {
         return userRepository.findById(id)
@@ -88,6 +91,12 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    @Transactional
+    public void update_is_online(Long userId, Integer status) {
+        userRepository.updateUserOnlineStatus(userId, status);
+        webSocketService.notifyStatusChange(userId, status);
     }
 
 }

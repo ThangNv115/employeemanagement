@@ -31,4 +31,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("UPDATE User u SET u.failedOtpAttempts = u.failedOtpAttempts + 1 WHERE u.id = :userId")
     void incrementFailedOtpAttempts(@Param("userId") Long userId);
 
+    @Modifying
+    @Query("UPDATE User u SET u.isOnline = :status WHERE u.id = :userId")
+    void updateUserOnlineStatus(@Param("userId") Long userId, @Param("status") Integer status);
+
 }

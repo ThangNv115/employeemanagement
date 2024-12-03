@@ -39,21 +39,19 @@ public class AuthController {
         User user = userService.findById(userDetails.getUserId());
 
         if (otpService.validateOtp(user, otp)) {
-            System.out.println("User Authorities: " + userDetails.getAuthorities());
+            userService.update_is_online(user.getId(), 1);
 
             String role = userDetails.getAuthorities().stream()
                     .findFirst()
                     .map(GrantedAuthority::getAuthority)
                     .orElse("");
 
-            System.out.println("Selected Role: " + role);
-
             return switch (role) {
                 case "ROLE_ADMIN" -> "redirect:/admin/users";
                 case "ROLE_IT" -> "redirect:/it";
                 case "ROLE_ACCOUNTANT" -> "redirect:/accountant";
                 case "ROLE_MARKETING" -> "redirect:/marketing";
-                default -> "redirect:/login?error=invalid_role";
+                default -> "redirect:/";
             };
         }
 
